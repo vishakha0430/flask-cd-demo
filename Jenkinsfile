@@ -49,7 +49,7 @@ pipeline {
 
                 withCredentials([
                     file(
-                        credentialsId: 'kubeconfig-creds',
+                        credentialsId: 'kubeconfig-creds-new',,
                         variable: 'KUBECONFIG'
                     ),
                     usernamePassword(
