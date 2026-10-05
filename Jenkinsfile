@@ -58,7 +58,7 @@ pipeline {
                         passwordVariable: 'DOCKER_TOKEN'
                     )
                 ]) {
-                    bat 'kubectl set image deployment/web-deploy web=%DOCKER_USER%/flask-demo:%BUILD_NUMBER%'
+                    bat 'kubectl set image deployment/web-deploy flask-demo=%DOCKER_USER%/flask-demo:%BUILD_NUMBER%'
                     bat 'kubectl rollout status deployment/web-deploy'
                 }
             }
