@@ -27,12 +27,9 @@ stage('Push Docker Image') {
                 passwordVariable: 'DOCKER_TOKEN'
             )
         ]) {
-            powershell '''
-                $env:DOCKER_TOKEN | docker login --username $env:DOCKER_USER --password-stdin
-                if ($LASTEXITCODE -ne 0) {
-                    exit $LASTEXITCODE
-                }
-            '''
+            bat '''
+docker login -u "%DOCKER_USER%" --password-stdin < "%DOCKER_TOKEN%"
+'''
             bat 'docker push %DOCKER_USER%/flask-demo:%BUILD_NUMBER%'
         }
     }
