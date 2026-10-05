@@ -17,22 +17,26 @@ pipeline {
                 }
             }
         }
-
-        stage('Push Docker Image') {
-            steps {
-                echo 'Pushing Docker image to Docker Hub...'
-                withCredentials([
-                    usernamePassword(credentialsId: 'dockerhub-cd-creds',
-                        usernameVariable: 'DOCKER_USER',
-                        passwordVariable: 'DOCKER_TOKEN'
-                    )
-                ]) {
-                    bat 'echo %DOCKER_TOKEN% | docker login -u %DOCKER_USER% --password-stdin'
-                    bat 'docker push %DOCKER_USER%/flask-demo:%BUILD_NUMBER%'
+stage('Push Docker Image') {
+    steps {
+        echo 'Pushing Docker image to Docker Hub...'
+        withCredentials([
+            usernamePassword(
+                credentialsId: 'dockerhub-cd-creds',
+                usernameVariable: 'DOCKER_USER',
+                passwordVariable: 'DOCKER_TOKEN'
+            )
+        ]) {
+            powershell '''
+                $env:DOCKER_TOKEN | docker login --username $env:DOCKER_USER --password-stdin
+                if ($LASTEXITCODE -ne 0) {
+                    exit $LASTEXITCODE
                 }
-            }
+            '''
+            bat 'docker push %DOCKER_USER%/flask-demo:%BUILD_NUMBER%'
         }
-
+    }
+}
         stage('Deploy to Kubernetes') {
             steps {
                 echo 'Deploying application to Kubernetes...'
